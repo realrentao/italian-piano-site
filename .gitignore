@@ -1,0 +1,6 @@
+.workbuddy/
+work/*.json
+work/*.log
+work/*.png
+work/httpd.log
+*.err

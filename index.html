@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>意大利语钢琴课术语与对话</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%231F2A44'/%3E%3Ctext x='16' y='23' text-anchor='middle' font-family='serif' font-size='18' fill='%23E8C07A'%3E%F0%9F%8E%B9%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <button class="icon-btn menu-btn" id="menuBtn" aria-label="目录">☰</button>
+  <div class="brand">
+    <span class="logo">🎹</span>
+    <div class="brand-txt">
+      <b id="bookTitle">意大利语钢琴课术语与对话</b>
+      <small id="bookAuthor"></small>
+    </div>
+  </div>
+
+  <div class="search-box">
+    <input id="search" type="search" placeholder="搜索意语术语 / 中文 / 对话…" autocomplete="off">
+    <button class="icon-btn" id="searchClear" title="清空">✕</button>
+  </div>
+
+  <div class="top-actions">
+    <button class="icon-btn" id="studyBtn" title="学习模式：闪卡 / 测验（间隔重复）">学</button>
+    <button class="icon-btn" id="detailBtn" title="显示/隐藏 例句与备注">详</button>
+    <button class="icon-btn" id="themeBtn" title="切换主题">◐</button>
+    <button class="icon-btn" id="helpBtn" title="说明">?</button>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="side-head">
+      <span>目录</span>
+      <span class="side-count" id="sideCount"></span>
+    </div>
+    <nav class="toc" id="toc"></nav>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <main class="main" id="main">
+    <div id="content"></div>
+    <div id="searchResults" class="search-results hidden"></div>
+  </main>
+</div>
+
+<!-- 全盘播放控制条 -->
+<div class="player" id="player">
+  <button class="icon-btn" id="menuBtn2" title="目录">☰</button>
+
+  <div class="pl-scope">
+    <select id="scopeSel" title="播放范围">
+      <option value="sec">本节</option>
+      <option value="parte">本大类</option>
+      <option value="all">全书</option>
+    </select>
+  </div>
+
+  <button class="play-btn" id="playBtn" title="播放 / 暂停（空格）">
+    <span class="ico-play">▶</span><span class="ico-pause">❚❚</span>
+  </button>
+  <button class="icon-btn" id="prevBtn" title="上一条">⏮</button>
+  <button class="icon-btn" id="nextBtn" title="下一条">⏭</button>
+
+  <div class="pl-progress">
+    <div class="pl-bar"><i id="plBar"></i></div>
+    <div class="pl-label" id="plLabel">未播放</div>
+  </div>
+
+  <div class="pl-ctrl">
+    <select id="modeSel" title="播放顺序">
+      <option value="it-zh">意→中（逐条）</option>
+      <option value="all-it-zh">全部意语→全部中文</option>
+      <option value="it-only">仅意语</option>
+      <option value="zh-only">仅中文</option>
+    </select>
+    <select id="rateSel" title="语速">
+      <option value="0.7">0.7×</option>
+      <option value="0.85">0.85×</option>
+      <option value="1" selected>1.0×</option>
+      <option value="1.15">1.15×</option>
+    </select>
+    <select id="gapSel" title="条目间隔">
+      <option value="0">无间隔</option>
+      <option value="400" selected>0.4 秒</option>
+      <option value="900">0.9 秒</option>
+      <option value="1800">1.8 秒</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="loopChk"><span>循环</span></label>
+    <label class="chk"><input type="checkbox" id="shuffleChk"><span>随机</span></label>
+  </div>
+</div>
+
+<!-- 学习模式（闪卡 / 测验 + SRS） -->
+<div class="study hidden" id="study">
+  <div class="study-bar">
+    <button class="icon-btn" id="studyClose" title="退出学习">✕</button>
+    <div class="stab-group">
+      <button class="stab active" data-smode="card">闪卡</button>
+      <button class="stab" data-smode="quiz">测验</button>
+    </div>
+    <select id="studyScope" class="study-sel" title="学习范围">
+      <option value="sec">本节</option>
+      <option value="parte">本大类</option>
+      <option value="all">全书</option>
+    </select>
+    <label class="chk"><input type="checkbox" id="studyShuffle" checked><span>打乱</span></label>
+    <label class="chk"><input type="checkbox" id="studyDue"><span>仅到期</span></label>
+  </div>
+  <div class="study-body" id="studyBody"></div>
+  <div class="study-foot" id="studyFoot"></div>
+</div>
+
+<!-- 说明弹窗 -->
+<div class="modal hidden" id="helpModal">
+  <div class="modal-card">
+    <h3>使用说明</h3>
+    <ul>
+      <li><b>两大模块</b>：①《钢琴技术术语》—— 56 条术语（手部与身体部位 / 触键与奏法 / 力度·速度·表情 / 踏板·声部·结构），每条含词性、中文释义、地道例句与备注；②《课堂高频句与对话》—— 14 个场景、126 轮师生对话（课堂高频句 + 师生对话示例），含意大利语原文与中文翻译。</li>
+      <li><b>全盘播放</b>：选好范围（本节 / 本大类 / 全书）与顺序，点 ▶ 连续朗读。默认「意→中（逐条）」= 意语 → 中文 → 下一条。</li>
+      <li><b>点读</b>：点击任意意语或中文文本可单独发音；术语与对话均带 🔊（意语）/ 汉（中文）按钮。</li>
+      <li><b>例句与备注</b>：点右上角「详」可整体隐藏/显示术语的例句与备注，方便自测。</li>
+      <li><b>快捷键</b>：<kbd>空格</kbd> 播放/暂停，<kbd>←</kbd> <kbd>→</kbd> 上一条/下一条，<kbd>/</kbd> 聚焦搜索。</li>
+      <li><b>进度</b>：右上角「标记学完」记录小节，状态存本地浏览器。</li>
+      <li><b>学习模式</b>：闪卡（意语→翻面看中文）+ 测验（四选一，间隔重复 SRS），可导出/导入进度。</li>
+    </ul>
+    <div class="prog-tools">
+      <span class="pt-label">学习进度：</span>
+      <button class="btn" id="exportBtn">导出</button>
+      <label class="btn" for="importFile">导入</label>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+    <button class="btn primary" id="helpClose">知道了</button>
+  </div>
+</div>
+
+<script src="data/meta.js"></script>
+<script src="js/app.js" defer></script>
+</body>
+</html>
